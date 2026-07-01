@@ -102,8 +102,12 @@ const updateUser = async (req, res, next) => {
 
 const getUserList = async (req, res, next) => {
     try{
-        const users = await getUsers();
-        return res.status(200).json({message: "User list", users});
+
+        const page = Math.max(1, parseInt(req.query.page) || 1); // Default page is 1
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10)); // Default limit is 10 and max it can go till 100
+        const offset = (page - 1) * limit;
+        const users = await getUsers(limit, offset);
+        return res.status(200).json({message: "User list:", page, limit, users});
     }catch(error){
         next(error);
     }

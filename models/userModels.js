@@ -29,8 +29,8 @@ const updateUserRole = async (user_no, role) => {
     return result.rows[0];
 }
 
-const getUsers = async () => {
-    const result = await pool.query("SELECT user_no, username, display_name, email, role FROM users");
+const getUsers = async (limit, offset) => {
+    const result = await pool.query(`SELECT user_no, username, display_name, email, role FROM users ORDER BY created_at DESC LIMIT $1 OFFSET $2`, [limit, offset]);
     return result.rows;
 }
 
