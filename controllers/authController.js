@@ -55,7 +55,7 @@ const loginUser = async (req, res, next) => {
         if(!isPasswordMatch){
             throw new apiError(400, "Invalid password");
         }
-        const token = jwt.sign({user_no: user.user_no, user_email: user.email, role: user.role}, secretKey, {expiresIn: "3h"});
+        const token = jwt.sign({user_no: user.user_no, user_email: user.email, role: user.role}, secretKey, {expiresIn: "3d"});
         return res.status(200).json({message: "Login successful", token});
 
     }catch(error){
@@ -65,7 +65,7 @@ const loginUser = async (req, res, next) => {
 
 const updateUserById = async (req, res, next) => {
     try{
-        const user_number = req.params;
+        const {user_number} = req.params;
         const data = req.body;
 
         if(Object.keys(data).length === 0){
@@ -92,7 +92,6 @@ const updateUserById = async (req, res, next) => {
         }
 
         const updatedUser = await updateUser(user_number, filtered_data);
-        delete updatedUser.password;
         return res.status(200).json({message: "User updated successfully", updatedUser});
 
     }catch(error){
@@ -135,8 +134,11 @@ const updateUserRoleById = async (req, res, next) => {
 
 const getUserId = async (req, res, next) => {
     try{
-        const user_number = req.params;
+        const {user_number} = req.params;
         const user = await getUserById(user_number);
+        if(!user){
+            throw new apiError(404, "User not found");
+        }
         return res.status(200).json({message: "User details", user});
     }catch(error){
         next(error);
@@ -145,8 +147,11 @@ const getUserId = async (req, res, next) => {
 
 const getUserDisplayName = async (req, res, next) => {
     try{
-        const display_name = req.params;
+        const {display_name} = req.params;
         const user = await getUserByDisplayName(display_name);
+        if(!user){
+            throw new apiError(404, "User not found");
+        }
         return res.status(200).json({message: "User details", user});
     }catch(error){
         next(error);

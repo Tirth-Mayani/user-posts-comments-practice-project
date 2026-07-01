@@ -15,7 +15,7 @@ const updateUser = async (user_no, data) => {
 
     const setQuery = keys.map((key, index) => `${key} = $${index + 1}`).join(", ");
     const result = await pool.query(
-        `UPDATE users SET ${setQuery} WHERE user_no = $${keys.length + 1} RETURNING *`,
+        `UPDATE users SET ${setQuery} WHERE user_no = $${keys.length + 1} RETURNING id, user_no, username, display_name, role, email`,
         [...values, user_no]
     );
     return result.rows[0];
@@ -40,7 +40,7 @@ const getUserById = async (user_no) => {
 }
 
 const getUserByEmail = async (email) => {
-    const result = await pool.query("SELECT user_no, username, display_name, email, role FROM users WHERE email = $1", [email]);
+    const result = await pool.query("SELECT user_no, username, display_name, email, role, password FROM users WHERE email = $1", [email]);
     return result.rows[0];
 }
 

@@ -14,7 +14,7 @@ class LoginUserDTO {
     }
 }
 
-const roleUpdateDTO = {
+class roleUpdateDTO {
     constructor(body){
         this.role = body.role;
     }
