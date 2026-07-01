@@ -63,7 +63,7 @@ const loginUser = async (req, res, next) => {
     }
 };
 
-const updateUser = async (req, res, next) => {
+const updateUserById = async (req, res, next) => {
     try{
         const user_number = req.params;
         const data = req.body;
@@ -113,7 +113,7 @@ const getUserList = async (req, res, next) => {
     }
 };
 
-const updateUserRole = async (req, res, next) => {
+const updateUserRoleById = async (req, res, next) => {
     try{
         const {user_number} = req.params;
 
@@ -156,9 +156,9 @@ const getUserDisplayName = async (req, res, next) => {
 module.exports = {
     registerUser,
     loginUser,
-    updateUser,
+    updateUserById,
     getUserList,
-    updateUserRole,
+    updateUserRoleById,
     getUserId,
     getUserDisplayName
 }
