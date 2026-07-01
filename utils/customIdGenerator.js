@@ -11,4 +11,4 @@ const generateId = async (tableName, column, prefix) => {
     return `${prefix}-${newNumber.toString().padStart(4, "0")}`;
 };
 
-module.exports
+module.exports = {generateId};

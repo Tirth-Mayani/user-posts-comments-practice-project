@@ -4,6 +4,7 @@ const errorHandler = (err, req, res, next) => {
     if (err instanceof apiError) {
         return res.status(err.statusCode).json({ message: err.message, errors: err.errors });
     }
+    console.error(err);
     return res.status(500).json({ success: false, message: "internal server error" });
 };
 

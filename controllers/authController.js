@@ -23,7 +23,7 @@ const registerUser = async (req, res, next) => {
             throw new apiError(400, "Email already exists");
         }
 
-        const checkUniqueDisplayName = getUserByDisplayName(dto.display_name);
+        const checkUniqueDisplayName = await getUserByDisplayName(dto.display_name);
         if(checkUniqueDisplayName){
             throw new apiError(400, "entered Display name is not available");
         }
@@ -32,7 +32,7 @@ const registerUser = async (req, res, next) => {
 
         const hashedPassword = await bcrypt.hash(dto.password, 10);
         const user = await createUser({user_no, username: dto.username, display_name: dto.display_name, email: dto.email, password: hashedPassword});
-        user.delete("password");
+        delete user.password;
         return res.status(201).json({message: "User created successfully", user});
     }catch(error){
         next(error);
@@ -92,7 +92,7 @@ const updateUserById = async (req, res, next) => {
         }
 
         const updatedUser = await updateUser(user_number, filtered_data);
-        updatedUser.delete("password");
+        delete updatedUser.password;
         return res.status(200).json({message: "User updated successfully", updatedUser});
 
     }catch(error){
@@ -126,7 +126,7 @@ const updateUserRoleById = async (req, res, next) => {
         const dto = new roleUpdateDTO(req.body);
 
         const updatedUser = await updateUserRole(user_number, dto.role);
-        updatedUser.delete("password");
+        delete updatedUser.password;
         return res.status(200).json({message: "User role updated successfully", updatedUser});
     }catch(error){
         next(error);
