@@ -40,7 +40,7 @@ const getUserById = async (user_no) => {
 }
 
 const getUserByEmail = async (email) => {
-    const result = await pool.query("SELECT user_no, username, display_name, email, role, password FROM users WHERE email = $1", [email]);
+    const result = await pool.query("SELECT id, username, display_name, email, role, password FROM users WHERE email = $1", [email]);
     return result.rows[0];
 }
 

@@ -55,7 +55,7 @@ const loginUser = async (req, res, next) => {
         if(!isPasswordMatch){
             throw new apiError(400, "Invalid password");
         }
-        const token = jwt.sign({user_no: user.user_no, user_email: user.email, role: user.role}, secretKey, {expiresIn: "3d"});
+        const token = jwt.sign({id: user.id, user_email: user.email, role: user.role}, secretKey, {expiresIn: "3d"});
         return res.status(200).json({message: "Login successful", token});
 
     }catch(error){
