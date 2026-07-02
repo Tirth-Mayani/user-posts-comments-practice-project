@@ -3,7 +3,7 @@ const pool = require("../configs/db");
 const jwt = require("jsonwebtoken");
 const secretKey = process.env.SECRET_KEY;
 const apiError = require("../utils/apiError");
-const {createUser, updateUser, updateUserRole, getUsers, getUserById, getUserByEmail, getUserByDisplayName} = require("../models/userModels");
+const {createUser, updateUser, updateUserRole, getUsers, getUserById, getUserByEmail, getUserByDisplayName, getUserByPId} = require("../models/userModels");
 const { RegisterUserDTO, LoginUserDTO, roleUpdateDTO} = require("../dtos/authDto");
 const { validationResult } = require("express-validator");
 
@@ -158,6 +158,19 @@ const getUserDisplayName = async (req, res, next) => {
     }    
 };
 
+const getUserByPKey = async (req, res, next) => {
+    try{
+        const {id} = req.params;
+        const user = await getUserByPId(id);
+        if(!user){
+            throw new apiError(404, "User not found");
+        }
+        return res.status(200).json({message: "User details", user});
+    }catch(error){
+        next(error);
+    }
+};
+
 module.exports = {
     registerUser,
     loginUser,
@@ -165,5 +178,6 @@ module.exports = {
     getUserList,
     updateUserRoleById,
     getUserId,
-    getUserDisplayName
+    getUserDisplayName,
+    getUserByPKey
 }

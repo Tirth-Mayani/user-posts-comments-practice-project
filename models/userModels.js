@@ -49,6 +49,11 @@ const getUserByDisplayName = async (display_name) => {
     return result.rows[0];
 }
 
+const getUserByPId = async (id) => {
+    const result = await pool.query("SELECT user_no, username, display_name, email, role FROM users WHERE id = $1", [id]);
+    return result.rows[0];
+}
+
 module.exports = {
     createUser,
     updateUser,
@@ -56,5 +61,6 @@ module.exports = {
     getUsers,
     getUserById,
     getUserByEmail,
-    getUserByDisplayName
+    getUserByDisplayName,
+    getUserByPId
 }

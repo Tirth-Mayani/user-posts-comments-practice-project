@@ -22,6 +22,9 @@ router.get("/user/display_name/:display_name", authMiddleware, AuthController.ge
 //get user details by user number (accessible by all authenticated users)
 router.get("/user/:user_number", authMiddleware, AuthController.getUserId);
 
+//get user details by primary key (accessible by all authenticated users)
+router.get("/user/pkey/:id", authMiddleware, AuthController.getUserByPKey);
+
 //update user details (only accessible by admin and superadmin)
 router.put("/update_user/:user_number", authMiddleware, roleMiddleware("admin", "superadmin"), AuthController.updateUserById);
 
