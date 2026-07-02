@@ -3,7 +3,7 @@ const pool = require("../configs/db");
 const createUser = async (data) => {
     const {user_no, username, display_name, email, password} = data;
     const result = await pool.query(
-        "INSERT INTO users (user_no,username, display_name, email, password, role) VALUES ($1, $2, $3, $4, $5, 'user') RETURNING *",
+        "INSERT INTO users (user_no, username, display_name, email, password, role) VALUES ($1, $2, $3, $4, $5, 'user') RETURNING *",
         [user_no, username, display_name, email, password]
     );
     return result.rows[0];
@@ -35,7 +35,7 @@ const getUsers = async (limit, offset) => {
 }
 
 const getUserById = async (user_no) => {
-    const result = await pool.query("SELECT user_no, username, display_name, email, role FROM users WHERE user_no = $1", [user_no]);
+    const result = await pool.query("SELECT id, user_no, username, display_name, email, role FROM users WHERE user_no = $1", [user_no]);
     return result.rows[0];
 }
 
