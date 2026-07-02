@@ -40,3 +40,17 @@ const deletePostById = async (post_no) => {
     const result = await pool.query("DELETE FROM posts WHERE post_no = $1 RETURNING *", [post_no]);
     return result.rows[0];
 };
+
+const getUserPosts = async (user_id, limit, offset) => {
+    const result = await pool.query("SELECT post_no, user_id, title, description FROM posts WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3", [user_id, limit, offset]);
+    return result.rows;
+};
+
+module.exports ={
+    createPost,
+    updatePost,
+    getAllPosts,
+    getPostById,
+    getPostByTitle,
+    deletePostById
+}
