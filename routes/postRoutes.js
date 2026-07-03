@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const PostController = require("../controllers/postControllers");
-const { createPostValidationRules, updatePostValidationRules } = require("../middlewares/validationMiddleware");
+const {createPostValidator} = require("../validators/postValidators");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 //creating a new post for verified users
-router.post("/create", authMiddleware, createPostValidationRules, PostController.createPostController);
+router.post("/create", authMiddleware, createPostValidator, PostController.createPostController);
 
 //updating a post by post_no by the post owner
-router.put("/update/:post_no", authMiddleware, updatePostValidationRules, PostController.updatePostController);
+router.put("/update/:post_no", authMiddleware, PostController.updatePostController);
 
 //getting all posts with pagination
 router.get("/all", PostController.getAllPostsController);
@@ -23,6 +23,6 @@ router.get("/title/:title", PostController.getPostByPostTitleController);
 router.get("/user/:user_no", authMiddleware, PostController.getUserPostsByUserNoController);
 
 //getting posts by user display name with pagination
-router.get("/user/display_name", PostController.getPostsByUserDisplayNameController);
+router.get("/display_name", PostController.getPostsByUserDisplayNameController);
 
 module.exports = router;

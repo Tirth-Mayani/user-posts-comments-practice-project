@@ -44,7 +44,7 @@ const updatePostController = async (req, res, next) => {
                 updateData[key] = value;
             }
         }
-        const post = await updatePostByPostNo(post_no, {});
+        const post = await updatePostByPostNo(post_no, user_id, updateData);
         return res.status(200).json({message: "Post updated successfully", post});
     }catch(error){
         next(error);
@@ -54,7 +54,7 @@ const updatePostController = async (req, res, next) => {
 const getAllPostsController = async (req, res, next) => {
     try{
         const page = Math.max(1, parseInt(req.query.page) || 1);
-        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit)));
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 1));
         const offset = (page - 1) * limit;
 
         const posts = await getAllPosts(limit, offset);
@@ -86,6 +86,10 @@ const deletePostController = async (req, res, next) => {
 
 const getPostByPostTitleController = async (req, res, next) => {
     try{
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            throw new apiError(400, "Validation error", errors.array());
+        }
         const title = req.params.title.trim();
         const post = await getPostByTitle(title);
         if(!post){
@@ -99,13 +103,17 @@ const getPostByPostTitleController = async (req, res, next) => {
 
 const getUserPostsByUserNoController = async (req, res, next) => {
     try{
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            throw new apiError(400, "Validation error", errors.array());
+        }
         const {user_no} = req.params;
         const page = Math.max(1, parseInt(req.query.page) || 1);
-        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit)));
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 1));
         const offset = (page - 1) * limit;
         const posts = await getUserPostsByUserNo(user_no, limit, offset);
         if(posts.length === 0){
-            throw new apiError(404, "No posts found for the given user");
+            throw new apiError(404, "No posts found from the given user");
         }
         return res.status(200).json({message: "User posts", posts});
     }catch(error){
@@ -117,11 +125,11 @@ const getPostsByUserDisplayNameController = async (req, res, next) => {
     try{
         const displayName = req.body.display_name.trim();
         const page = Math.max(1, parseInt(req.query.page) || 1);
-        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit)));
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 1));
         const offset = (page - 1) * limit;
         const posts = await getPostsByUserDisplayName(displayName, limit, offset);
         if(posts.length === 0){
-            throw new apiError(404, "No posts found for the given user");
+            throw new apiError(404, "No posts found from the given user");
         }
         return res.status(200).json({message: "Posts by user display name", posts});
     }catch(error){

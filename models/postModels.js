@@ -22,7 +22,7 @@ const updatePostByPostNo = async (post_no, user_id, data) => {
 };
 
 const getAllPosts = async (limit, offset) => {
-    const result = await pool.query(`SELECT post_no, id, user_id, title, description FROM posts WERE deleted_at IS NULL ORDER BY created_at DESC LIMIT $1 OFFSET $2`, [limit, offset]);
+    const result = await pool.query(`SELECT post_no, id, user_id, title, description FROM posts WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT $1 OFFSET $2`, [limit, offset]);
     return result.rows;
 };
 
@@ -32,7 +32,7 @@ const getPostByPostNo = async (post_no) => {
 };
 
 const getPostByTitle = async (title) => {
-    const result = await pool.query("SELECT p.post_no, u.user_id, u.username, p.title, p.description FROM posts p JOIN users u ON p.user_id = u.id WHERE title ILIKE $1 AND deleted_at IS NULL", [`%${title}%`]);
+    const result = await pool.query("SELECT p.post_no, u.id, u.username, p.title, p.description FROM posts p JOIN users u ON p.user_id = u.id WHERE title ILIKE $1 AND deleted_at IS NULL", [`%${title}%`]);
     return result.rows;
 };
 
@@ -58,9 +58,9 @@ const getPostsByUserDisplayName = async(display_name, limit, offset) => {
         `SELECT p.post_no, p.title, p.description, p.created_at, 
             u.user_no AS author_no, u.display_name AS author 
             FROM posts p JOIN users u ON p.user_id = u.id 
-            WHERE u.display_name ILIKE $1 AND p.deleted_at IS NULL 
+            WHERE LOWER(u.display_name) = LOWER($1) AND p.deleted_at IS NULL 
             ORDER BY p.created_at DESC LIMIT $2 OFFSET $3`,
-            [`%${display_name}%`, limit, offset]
+            [display_name, limit, offset]
         );
     return result.rows;
 };
