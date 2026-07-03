@@ -22,7 +22,7 @@ const updatePostByPostNo = async (post_no, user_id, data) => {
 };
 
 const getAllPosts = async (limit, offset) => {
-    const result = await pool.query(`SELECT post_no, id, user_id, title, description FROM posts WERE deleted_at IS NULL ORDER BY created_at DESC LIMIT $1 OFFSET $2`, [limit, offset]);
+    const result = await pool.query(`SELECT post_no, id, user_id, title, description FROM posts WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT $1 OFFSET $2`, [limit, offset]);
     return result.rows;
 };
 
@@ -32,7 +32,7 @@ const getPostByPostNo = async (post_no) => {
 };
 
 const getPostByTitle = async (title) => {
-    const result = await pool.query("SELECT p.post_no, u.user_id, u.username, p.title, p.description FROM posts p JOIN users u ON p.user_id = u.id WHERE title ILIKE $1 AND deleted_at IS NULL", [`%${title}%`]);
+    const result = await pool.query("SELECT p.post_no, u.id, u.username, p.title, p.description FROM posts p JOIN users u ON p.user_id = u.id WHERE title ILIKE $1 AND deleted_at IS NULL", [`%${title}%`]);
     return result.rows;
 };
 
