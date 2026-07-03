@@ -23,6 +23,6 @@ router.get("/title/:title", PostController.getPostByPostTitleController);
 router.get("/user/:user_no", authMiddleware, PostController.getUserPostsByUserNoController);
 
 //getting posts by user display name with pagination
-router.get("/user/display_name", PostController.getPostsByUserDisplayNameController);
+router.get("/display_name", PostController.getPostsByUserDisplayNameController);
 
 module.exports = router;

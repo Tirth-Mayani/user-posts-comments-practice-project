@@ -113,7 +113,7 @@ const getUserPostsByUserNoController = async (req, res, next) => {
         const offset = (page - 1) * limit;
         const posts = await getUserPostsByUserNo(user_no, limit, offset);
         if(posts.length === 0){
-            throw new apiError(404, "No posts found for the given user");
+            throw new apiError(404, "No posts found from the given user");
         }
         return res.status(200).json({message: "User posts", posts});
     }catch(error){
@@ -125,11 +125,11 @@ const getPostsByUserDisplayNameController = async (req, res, next) => {
     try{
         const displayName = req.body.display_name.trim();
         const page = Math.max(1, parseInt(req.query.page) || 1);
-        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit)));
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 1));
         const offset = (page - 1) * limit;
         const posts = await getPostsByUserDisplayName(displayName, limit, offset);
         if(posts.length === 0){
-            throw new apiError(404, "No posts found for the given user");
+            throw new apiError(404, "No posts found from the given user");
         }
         return res.status(200).json({message: "Posts by user display name", posts});
     }catch(error){

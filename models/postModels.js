@@ -58,9 +58,9 @@ const getPostsByUserDisplayName = async(display_name, limit, offset) => {
         `SELECT p.post_no, p.title, p.description, p.created_at, 
             u.user_no AS author_no, u.display_name AS author 
             FROM posts p JOIN users u ON p.user_id = u.id 
-            WHERE u.display_name ILIKE $1 AND p.deleted_at IS NULL 
+            WHERE LOWER(u.display_name) = LOWER($1) AND p.deleted_at IS NULL 
             ORDER BY p.created_at DESC LIMIT $2 OFFSET $3`,
-            [`%${display_name}%`, limit, offset]
+            [display_name, limit, offset]
         );
     return result.rows;
 };
