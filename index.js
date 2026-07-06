@@ -15,7 +15,7 @@ app.use(express.json({limit: "10mb"}));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
-
+app.use("/api/comments", commentRoutes);
 
 app.use(errorHandler);
 

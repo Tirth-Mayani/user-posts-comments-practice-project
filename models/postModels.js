@@ -27,7 +27,7 @@ const getAllPosts = async (limit, offset) => {
 };
 
 const getPostByPostNo = async (post_no) => {
-    const result = await pool.query("SELECT post_no, user_id, title, description FROM posts WHERE post_no = $1 AND deleted_at IS NULL", [post_no]);
+    const result = await pool.query("SELECT id, post_no, user_id, title, description FROM posts WHERE post_no = $1 AND deleted_at IS NULL", [post_no]);
     return result.rows[0];
 };
 
