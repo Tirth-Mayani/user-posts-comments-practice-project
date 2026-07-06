@@ -139,4 +139,10 @@ const getCommentsByPostNoController = async (req, res, next) => {
     }
 };
 
-module.exports = { createCommentController, createReplyCommentController, updateCommentController, deleteCommentController, getCommentsByPostNoController };
+module.exports = { 
+    createCommentController, 
+    createReplyCommentController, 
+    updateCommentController, 
+    deleteCommentController, 
+    getCommentsByPostNoController 
+};
