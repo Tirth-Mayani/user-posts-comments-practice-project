@@ -16,4 +16,8 @@ const roleUpdateValidator = [
     body("role").notEmpty().withMessage("Role is required").isIn(["admin", "user", "guest", "superadmin"]).withMessage("Invalid role value"),
 ];
 
-module.exports = {registerUserValidator, loginUserValidator, roleUpdateValidator};
+module.exports = {
+    registerUserValidator, 
+    loginUserValidator, 
+    roleUpdateValidator
+};

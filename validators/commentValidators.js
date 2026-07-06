@@ -15,4 +15,8 @@ const updateCommentValidator = [
     body("content").trim().notEmpty().withMessage("Content is required"),
 ];
 
-module.exports = {createCommentValidator, createReplyCommentValidator, updateCommentValidator};
+module.exports = {
+    createCommentValidator, 
+    createReplyCommentValidator, 
+    updateCommentValidator
+};
