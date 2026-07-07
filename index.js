@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const swaggerUi = require("swagger-ui-express");
+const swaggerFile = require("./swagger-output.json");
 require("dotenv").config();
 
 const authRoutes = require("./routes/authRoutes");
@@ -12,6 +14,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors({origin: `http://localhost:${PORT}`}));
 app.use(express.json({limit: "10mb"}));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);

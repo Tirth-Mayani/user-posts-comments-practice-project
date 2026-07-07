@@ -1,19 +1,77 @@
 const express = require("express");
 const router = express.Router();
-const {body} = require("express-validator");
+const { body } = require("express-validator");
 
 const AuthController = require("../controllers/authController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const roleMiddleware = require("../middlewares/roleMiddleware");
-const {registerUserValidator, loginUserValidator, roleUpdateValidator} = require("../validators/authValidators");
+const { registerUserValidator, loginUserValidator, roleUpdateValidator } = require("../validators/authValidators");
 
 // register a new user
+/* 
+#swagger.tags = ['Authentication']
+#swagger.summary = 'Register User'
+#swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+        $ref: '#/definitions/registerUser'
+    }
+}
+#swagger.responses[201] = {
+    description: 'User registered successfully',}
+#swagger.responses[400] = {
+    description: 'Validation error',}
+#swagger.responses[500] = {
+    description: 'Internal server error',}
+*/
 router.post("/register", registerUserValidator, AuthController.registerUser);
 
 //login user
+/* 
+#swagger.tags = ['Authentication']
+#swagger.summary = 'Login User'
+#swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+        $ref: '#/definitions/loginUser'
+    }
+}
+#swagger.responses[200] = {
+    description: 'Login successful',}
+#swagger.responses[400] = {
+    description: 'Validation error',}
+#swagger.responses[500] = {
+    description: 'Internal server error',}
+*/
 router.post("/login", loginUserValidator, AuthController.loginUser);
 
 //get all users (only accessible by admin and superadmin)
+/* 
+#swagger.tags = ['Authentication']
+#swagger.summary = 'Get All Users'
+#swagger.parameters['page'] = {
+    in: 'query',
+    required: false,
+    schema: {
+        type: 'Integer'
+    }
+}
+#swagger.parameters['limit'] = {
+    in: 'query',
+    required: false,
+    schema: {
+        type: 'Integer'
+    }
+}
+#swagger.responses[200] = {
+    description: 'Users list',}
+#swagger.responses[400] = {
+    description: 'Validation error',}
+#swagger.responses[500] = {
+    description: 'Internal server error',}
+*/
 router.get("/users_list", authMiddleware, roleMiddleware("admin", "superadmin"), AuthController.getUserList);
 
 //get user details by display name (accessible by all authenticated users)
