@@ -2,6 +2,7 @@ const router = require("express").Router();
 const commentController = require("../controllers/commentControllers");
 const { createCommentValidator, createReplyCommentValidator, updateCommentValidator } = require("../validators/commentValidators");
 const authMiddleware = require("../middlewares/authMiddleware");
+const passport = require("../middlewares/passport");
 const commentAuthMiddleware = require("../middlewares/commentAuthMiddleware");
 
 // Create a new comment
@@ -11,10 +12,10 @@ router.post("/create", commentAuthMiddleware, createCommentValidator, commentCon
 router.post("/create_reply", commentAuthMiddleware, createReplyCommentValidator, commentController.createReplyCommentController);
 
 // Update a comment
-router.put("/update/:comment_no", authMiddleware, updateCommentValidator, commentController.updateCommentController);
+router.put("/update/:comment_no", passport.authenticate("jwt", { session: false }), updateCommentValidator, commentController.updateCommentController);
 
 // Delete a comment
-router.delete("/delete/:comment_no", authMiddleware, commentController.deleteCommentController);
+router.delete("/delete/:comment_no", passport.authenticate("jwt", { session: false }), commentController.deleteCommentController);
 
 // Get comments for a specific post
 router.get("/post/:post_no", commentController.getCommentsByPostNoController);
