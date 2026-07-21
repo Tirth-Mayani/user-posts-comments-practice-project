@@ -8,6 +8,7 @@ require("dotenv").config();
 const authRoutes = require("./routes/authRoutes");
 const postRoutes = require("./routes/postRoutes");
 const commentRoutes = require("./routes/commentRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 const passport = require("./middlewares/passport");
 const errorHandler = require("./middlewares/errorMiddleware");
 const { redisClient } = require("./configs/redis");
@@ -22,6 +23,7 @@ app.use(passport.initialize());
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.use(errorHandler);
 
