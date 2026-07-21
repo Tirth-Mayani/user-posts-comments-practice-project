@@ -82,6 +82,27 @@ const getRepliesOfCommentByCommentNo = async (comment_no, limit, offset) => {
     return result.rows;
 }
 
+const checkCommentParentByCommentNo = async (comment_no) => {
+    const result = await pool.query(
+        `SELECT parent_table.comment_no AS parent_comment, 
+        FROM comments AS child_table
+        LEFT JOIN comments AS parent_table ON child_table.parent_comment_id = parent_table.id
+        WHERE child_table.comment_no = $1 AND parent_table.deleted_at IS NULL`,
+        [comment_no]
+    );
+    return result.rows[0];
+}
+
+const checkCommentPostByCommntNo = async (comment_no) => {
+    const result = await pool.query(
+        `SELECT p.post_no FROM comments c
+        LEFT JOIN posts p ON c.post_id = p.id
+        WHERE c.parent_comment_id IS NULL AND c.comment_no = $1 AND p.deleted_at IS NULL AND c.deleted_at IS NULL`,
+        [comment_no]
+    );
+    return result.rows[0];
+}
+
 module.exports = {
     createComment,
     createReplyComment,
@@ -89,5 +110,7 @@ module.exports = {
     deleteCommentByCommentNo,
     getCommentsByPostNo,
     getCommentByCommentNo,
-    getRepliesOfCommentByCommentNo
+    getRepliesOfCommentByCommentNo,
+    checkCommentParentByCommentNo,
+    checkCommentPostByCommntNo
 }

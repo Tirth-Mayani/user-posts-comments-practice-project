@@ -10,6 +10,7 @@ const postRoutes = require("./routes/postRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const passport = require("./middlewares/passport");
 const errorHandler = require("./middlewares/errorMiddleware");
+const { redisClient } = require("./configs/redis");
 
 const PORT = process.env.PORT || 3000;
 

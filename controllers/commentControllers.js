@@ -1,9 +1,10 @@
 const apiError = require('../utils/apiError');
 const { validationResult } = require('express-validator');
 const { generateId } = require('../utils/customIdGenerator');
-const { createComment, createReplyComment, updateCommentByCommentNo, deleteCommentByCommentNo, getCommentsByPostNo, getCommentByCommentNo, getRepliesOfCommentByCommentNo } = require('../models/commentModels');
+const { createComment, createReplyComment, updateCommentByCommentNo, deleteCommentByCommentNo, getCommentsByPostNo, getCommentByCommentNo, getRepliesOfCommentByCommentNo, checkCommentParentByCommentNo, checkCommentPostByCommntNo } = require('../models/commentModels');
 const { createCommentDTO, createReplyCommentDTO, updateCommentDTO } = require('../dtos/commentDto');
 const { getPostByPostNo } = require('../models/postModels');
+const { getCache, setCache, deleteCache, deleteMultipleCache, cacheKeys } = require('../utils/cache');
 
 
 const createCommentController = async (req, res, next) => {
@@ -26,6 +27,10 @@ const createCommentController = async (req, res, next) => {
         const post_id = postExists.id;
 
         const comment = await createComment({ post_id: post_id, user_id: user_id, content: dto.content, comment_no: comment_no });
+
+        // refreshing the comment cache for individual data and post comments list
+        await deleteMultipleCache([cacheKeys.comment(comment_no), cacheKeys.POST_COMMENTS_ALL(post_no)]);
+        await setCache(cacheKeys.comment(comment_no), comment);
         return res.status(201).json({ message: "Comment created successfully", comment });
     } catch (error) {
         next(error);
@@ -58,6 +63,10 @@ const createReplyCommentController = async (req, res, next) => {
         const parent_comment_id = parentCommentExists.id;
 
         const comment = await createReplyComment({ user_id: user_id, post_id: post_id, comment_no: comment_no, content: dto.content, parent_comment_id: parent_comment_id });
+
+        // refreshing the comment cache for individual data and post comments list
+        await deleteMultipleCache([cacheKeys.comment(comment_no), cacheKeys.REPLY_COMMENTS_ALL(parent_comment_no)]);
+        await setCache(cacheKeys.comment(comment_no), comment);
         return res.status(201).json({ message: "Comment created successfully", comment });
     } catch (error) {
         next(error);
@@ -82,6 +91,20 @@ const updateCommentController = async (req, res, next) => {
         const dto = new updateCommentDTO(req.body);
         const comment_no = req.params.comment_no;
         const comment = await updateCommentByCommentNo(comment_no, dto.content);
+
+        // invalidating and setting comment cache
+        await deleteCache(cacheKeys.comment(comment_no));
+        await setCache(cacheKeys.comment(comment_no), comment);
+
+        const post_no = checkCommentPostByCommntNo(comment_no);
+        if(post_no){
+            await deleteCache(cacheKeys.POST_COMMENTS_ALL(post_no));
+        }
+
+        const parent_comment_no = checkCommentParentByCommentNo(comment_no);
+        if(parent_comment_no){
+            await deleteCache(cacheKeys.REPLY_COMMENTS_ALL(parent_comment_no));
+        }
         return res.status(200).json({ message: "Comment updated successfully", comment });
     } catch (error) {
         next(error);
@@ -108,7 +131,21 @@ const deleteCommentController = async (req, res, next) => {
         }
 
         const comment_no = req.params.comment_no;
+        // invalidating comment cache
+        await deleteCache(cacheKeys.comment(comment_no));
+
+        const post_no = checkCommentPostByCommntNo(comment_no);
+        if(post_no){
+            await deleteCache(cacheKeys.POST_COMMENTS_ALL(post_no));
+        }
+
+        const parent_comment_no = checkCommentParentByCommentNo(comment_no);
+        if(parent_comment_no){
+            await deleteCache(cacheKeys.REPLY_COMMENTS_ALL(parent_comment_no));
+        }
+
         const result = await deleteCommentByCommentNo(comment_no);
+
         return res.status(200).json({message: "Comment deleted successfully", result });
 
     } catch (error) {
@@ -132,7 +169,16 @@ const getCommentsByPostNoController = async (req, res, next) => {
         const page = Math.max(1, parseInt(req.query.page) || 1);
         const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 1));
         const offset = (page - 1) * limit;
+
+        const cached_post_comments = await getCache(cachekeys.POST_COMMENTS_ALL(post_no));
+        if(cached_post_comments){
+            return res.status(200).json({message: "Comments", page, limit, comments: cached_post_comments});
+        }
+
         const comments = await getCommentsByPostNo(post_no, limit, offset);
+
+        //setting post comments list in cache 
+        await setCache(cachekeys.POST_COMMENTS_ALL(post_no), comments);
         return res.status(200).json({message: "Comments", comments});
     } catch (error) {
         next(error);
