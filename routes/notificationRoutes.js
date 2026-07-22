@@ -8,6 +8,9 @@ router.get("/user", passport.authenticate("jwt", { session: false }), notificati
 // get count of unread notifications
 router.get("/unread_count", passport.authenticate("jwt", { session: false }), notificationController.getUnreadNtificationsCountController);
 
+// get notifications history for user
+router.get("/history", passport.authenticate("jwt", { session: false }), notificationController.getNotificationHistoryController);
+
 // mark a single notification as read
 router.patch("/read/:notification_no", passport.authenticate("jwt", { session: false }), notificationController.readNotificationController);
 

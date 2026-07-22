@@ -12,7 +12,7 @@ const createPostController = async (req, res, next) => {
             throw new apiError(400, "Validation error", errors.array());
         }
         const dto = new CreatePostDTO(req.body);
-        const post_no = await generateId("posts", "post_no", "POST");
+        const post_no = await generateId("POST");
         const user_id = req.user.id;
         const post = await createPost({user_id: user_id, title: dto.title, description: dto.description, post_no: post_no});
 

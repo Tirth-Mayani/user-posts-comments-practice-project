@@ -9,8 +9,8 @@ const createNotification = async (data) => {
     return result.rows[0];
 };
 
-const getNotificationsByRecipientId = async (recipient_id) => {
-    const result = await pool.query(`SELECT notification_no, message, type, is_read, read_at, created_at FROM notifications WHERE recipient_id = $1 ORDER BY created_at DESC`, [recipient_id]);
+const getNewNotificationsByRecipientId = async (recipient_id) => {
+    const result = await pool.query(`SELECT notification_no, message, type, is_read, read_at, created_at FROM notifications WHERE recipient_id = $1 AND is_read = false ORDER BY created_at DESC`, [recipient_id]);
     return result.rows;
 };
 
@@ -39,12 +39,27 @@ const deleteNotification = async (notification_no, user_id) => {
     return result.rows[0];
 };
 
+const getNotificationsHistory = async (user_id, limit, offset) => {
+    const result = await pool.query(`SELECT * FROM notifications WHERE recipient_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3`, [user_id, limit, offset]);
+    return result.rows;
+};
+
+const markNotificationsRead = async (notificationNos) => {
+    if(notificationNos.length === 0) return;
+    const result = await pool.query(
+        `UPDATE notifications SET is_read = true, read_at = NOW() WHERE notification_no = ANY($1::varchar[]) `,
+        [notificationNos]
+    )
+};
+
 module.exports = {
     createNotification,
-    getNotificationsByRecipientId,
+    getNewNotificationsByRecipientId,
     getNotificationByNotificationNo,
     getNotificationCount,
     markNotificationAsRead,
     markAllNotificationsAsRead,
-    deleteNotification
+    deleteNotification,
+    getNotificationsHistory,
+    markNotificationsRead
 }

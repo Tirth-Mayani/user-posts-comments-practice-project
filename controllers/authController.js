@@ -29,7 +29,7 @@ const registerUser = async (req, res, next) => {
             throw new apiError(400, "entered Display name is not available");
         }
 
-        const user_no = await generateId("users", "user_no", "USR");
+        const user_no = await generateId("USR");
 
         const hashedPassword = await bcrypt.hash(dto.password, 10);
         const user = await createUser({user_no, username: dto.username, display_name: dto.display_name, email: dto.email, password: hashedPassword});

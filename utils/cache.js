@@ -74,6 +74,19 @@ const deleteMultipleCache = async (keys) => {
     }
 };
 
+const pushToList = async (key, value) => {
+    return await redisClient.lPush(key, JSON.stringify(value));
+};
+
+const getList = async (key) => {
+    const list = await redisClient.lRange(key, 0, -1);
+    return list.map((item) => JSON.parse(item));
+};
+
+const trimList = async (key, start, end) => {
+    return await redisClient.lTrim(key, start, end);
+};
+
 const cacheKeys = {
     USERS_ALL: "users:all",
     POSTS_ALL: "posts:all",
@@ -90,5 +103,8 @@ module.exports = {
     setCache,
     deleteCache,
     deleteMultipleCache,
-    cacheKeys
+    cacheKeys,
+    pushToList,
+    getList,
+    trimList
 };

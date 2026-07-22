@@ -7,6 +7,7 @@ const commentModel = require("../../models/commentModels");
 const postModel = require("../../models/postModels");
 //redis client
 const redisClient = require("../../configs/redis");
+const { getCache, setCache, deleteCache, deleteMultipleCache, cacheKeys, pushToList, getList, trimList } = require("../../utils/cache");
 
 const { generateId } = require("../../utils/customIdGenerator");
 
@@ -24,10 +25,18 @@ const notificationWorker = new Worker(
                     const senderId = comment.user_id
                     const recipientId = post.user_id
                     if(senderId === recipientId) return;
-                    const notificationNo = await generateId("notifications", "notification_no", "NTF");
+                    const notificationNo = await generateId("NTF");
                     const type = "COMMENT";
                     const message = `${comment.userNo} commented on your post : ${post.title}`;
-                    await notificationModel.createNotification({ notification_no: notificationNo, recipient_id: recipientId, sender_id: senderId, post_id: post.id, comment_id: comment.id, message: message, type: type, is_read: false });
+                    const notification = await notificationModel.createNotification({ notification_no: notificationNo, recipient_id: recipientId, sender_id: senderId, post_id: post.id, comment_id: comment.id, message: message, type: type, is_read: false });
+
+                    await pushToList(`notifications:${recipientId}`,
+                        {
+                            notification_no: notification.notification_no,
+                            message: notification.message,
+                            type: notification.type
+                        }
+                    );
                 } catch (error) {
                     console.error(error);
                     throw error;

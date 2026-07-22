@@ -19,7 +19,7 @@ const createCommentController = async (req, res, next) => {
         const user_id = req.user ? req.user.id : null; // Set user_id to null for anonymous users
 
         const dto = new createCommentDTO(req.body);
-        const comment_no = await generateId("comments", "comment_no", "CMT");
+        const comment_no = await generateId("CMT");
 
         const post_no = req.body.post_no;
         const postExists = await getPostByPostNo(post_no);
@@ -55,7 +55,7 @@ const createReplyCommentController = async (req, res, next) => {
         const user_id = req.user ? req.user.id : null; // Set user_id to null for anonymous users
 
         const dto = new createReplyCommentDTO(req.body);
-        const comment_no = await generateId("comments", "comment_no", "CMT");
+        const comment_no = await generateId("CMT");
 
         const post_no = req.body.post_no;
         const postExists = await getPostByPostNo(post_no);
