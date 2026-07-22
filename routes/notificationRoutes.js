@@ -3,10 +3,13 @@ const notificationController = require("../controllers/notificationControllers")
 const passport = require("../middlewares/passport");
 
 //router to get user's notifications
-router.get("/user/:user_no", passport.authenticate("jwt", { session: false }), notificationController.getMyNotificationsController);
+router.get("/user", passport.authenticate("jwt", { session: false }), notificationController.getMyNotificationsController);
 
 // get count of unread notifications
 router.get("/unread_count", passport.authenticate("jwt", { session: false }), notificationController.getUnreadNtificationsCountController);
+
+// get notifications history for user
+router.get("/history", passport.authenticate("jwt", { session: false }), notificationController.getNotificationHistoryController);
 
 // mark a single notification as read
 router.patch("/read/:notification_no", passport.authenticate("jwt", { session: false }), notificationController.readNotificationController);

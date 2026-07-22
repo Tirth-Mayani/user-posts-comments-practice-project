@@ -65,6 +65,16 @@ const getPostsByUserDisplayName = async(display_name, limit, offset) => {
     return result.rows;
 };
 
+const getPostByPostPKey = async(post_id) => {
+    const result = await pool.query(
+        `SELECT id, post_no, user_id, title, description, created_at
+            FROM posts
+            WHERE id = $1 AND deleted_at IS NULL`,
+            [post_id]
+        );
+    return result.rows[0];
+};
+
 module.exports ={
     createPost,
     updatePostByPostNo,
@@ -73,5 +83,6 @@ module.exports ={
     getPostByTitle,
     deletePostByPostNo,
     getUserPostsByUserNo,
-    getPostsByUserDisplayName
+    getPostsByUserDisplayName,
+    getPostByPostPKey
 }

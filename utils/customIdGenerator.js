@@ -1,14 +1,23 @@
 const pool = require("../configs/db");
 
-const generateId = async (tableName, column, prefix) => {
-    const result = await pool.query(`SELECT ${column} FROM ${tableName} ORDER BY ${column} DESC LIMIT 1`);
-    if (result.rows.length === 0) {
-        return `${prefix}-0001`;
+const sequenceMap = {
+    USR: "user_no_seq",
+    POST: "post_no_seq",
+    NTF: "notification_no_seq",
+    CMT: "comment_no_seq",
+};
+
+const generateId = async (prefix) => {
+    const sequence = sequenceMap[prefix];
+
+    if(!sequence){
+        throw new Error(`Invalid ID prefix : ${prefix}`);
     }
-    const lastId = result.rows[0][column];
-    const lastNumber = parseInt(lastId.split("-")[1], 10);
-    const newNumber = lastNumber + 1;
-    return `${prefix}-${newNumber.toString().padStart(4, "0")}`;
+
+    const result = await pool.query(`SELECT nextval($1::regclass) AS id`, [sequence]);
+    const number = result.rows[0].id;
+
+    return `${prefix}-${number.toString().padStart(4, "0")}`;
 };
 
 module.exports = {generateId};
