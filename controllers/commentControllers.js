@@ -5,6 +5,8 @@ const { createComment, createReplyComment, updateCommentByCommentNo, deleteComme
 const { createCommentDTO, createReplyCommentDTO, updateCommentDTO } = require('../dtos/commentDto');
 const { getPostByPostNo } = require('../models/postModels');
 const { getCache, setCache, deleteCache, deleteMultipleCache, cacheKeys } = require('../utils/cache');
+const notificationQueue = require('../bullmq/queues/notificationQueue');
+const JOBS = require('../bullmq/jobConstants');
 
 
 const createCommentController = async (req, res, next) => {
@@ -28,6 +30,13 @@ const createCommentController = async (req, res, next) => {
 
         const comment = await createComment({ post_id: post_id, user_id: user_id, content: dto.content, comment_no: comment_no });
 
+        await notificationQueue.add(
+            JOBS.COMMENT_CREATED,
+            {
+                commentNo: comment.comment_no,
+            },
+            {jobId: comment.comment_no}
+        )
         // refreshing the comment cache for individual data and post comments list
         await deleteMultipleCache([cacheKeys.comment(comment_no), cacheKeys.POST_COMMENTS_ALL(post_no)]);
         await setCache(cacheKeys.comment(comment_no), comment);
@@ -170,7 +179,7 @@ const getCommentsByPostNoController = async (req, res, next) => {
         const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 1));
         const offset = (page - 1) * limit;
 
-        const cached_post_comments = await getCache(cachekeys.POST_COMMENTS_ALL(post_no));
+        const cached_post_comments = await getCache(cacheKeys.POST_COMMENTS_ALL(post_no));
         if(cached_post_comments){
             return res.status(200).json({message: "Comments", page, limit, comments: cached_post_comments});
         }
@@ -178,7 +187,7 @@ const getCommentsByPostNoController = async (req, res, next) => {
         const comments = await getCommentsByPostNo(post_no, limit, offset);
 
         //setting post comments list in cache 
-        await setCache(cachekeys.POST_COMMENTS_ALL(post_no), comments);
+        await setCache(cacheKeys.POST_COMMENTS_ALL(post_no), comments);
         return res.status(200).json({message: "Comments", comments});
     } catch (error) {
         next(error);
