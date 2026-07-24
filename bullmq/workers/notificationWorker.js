@@ -1,6 +1,6 @@
 const { Worker } = require("bullmq");
 const connection = require("../connection");
-const JOBS = require("../jobConstants");
+const {JOBS} = require("../jobConstants");
 //models
 const notificationModel = require("../../models/notificationModels");
 const commentModel = require("../../models/commentModels");

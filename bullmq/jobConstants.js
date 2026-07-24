@@ -1,5 +1,9 @@
-module.exports = {
+const JOBS = {
     COMMENT_CREATED: "COMMENT_CREATED",
     REPLY_COMMENT_CREATED: "REPLY_COMMENT_CREATED",
     WEATHER_POST: "WEATHER_POST",
+}
+
+module.exports = {
+    JOBS
 }

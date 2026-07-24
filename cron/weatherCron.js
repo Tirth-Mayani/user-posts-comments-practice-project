@@ -5,7 +5,7 @@ const { JOBS } = require("../bullmq/jobConstants");
 
 const {getCurrentWeather} = require("../services/weatherService");
 
-cron.schedule("10 * * * *", async () => {
+cron.schedule("* * * * *", async () => {
     try{
         console.log("Fetching weather...");
         const weather = await getCurrentWeather();
