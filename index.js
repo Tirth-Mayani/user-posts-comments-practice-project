@@ -4,6 +4,7 @@ const cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("./swagger-output.json");
 require("dotenv").config();
+require("./cron/weatherCron");
 
 const authRoutes = require("./routes/authRoutes");
 const postRoutes = require("./routes/postRoutes");
@@ -13,6 +14,7 @@ const passport = require("./middlewares/passport");
 const errorHandler = require("./middlewares/errorMiddleware");
 const { redisClient } = require("./configs/redis");
 const notificationWorker = require("./bullmq/workers/notificationWorker");
+const weatherWorker = require("./bullmq/workers/weatherWorker");
 
 const PORT = process.env.PORT || 3000;
 
